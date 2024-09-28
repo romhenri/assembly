@@ -13,24 +13,20 @@ includelib \masm32\lib\msvcrt.lib
 
 include \masm32\macros\macros.asm
 
-.data
-    msg db "A soma dos 100 primeiros numeros inteiros positivos eh: ", 0
-    resultStr db 11 dup(0)
-
 .code
 start:
-    xor eax, eax
-    xor ecx, ecx
+    mov eax, 24
 
-soma_loop:
-    inc ecx
-    add eax, ecx
-    cmp ecx, 100
-    jle soma_loop
+decrement_loop:
+    push eax
 
-    invoke dwtoa, eax, addr resultStr
-
-    printf("%d", eax)
+    printf("%d\n", eax)
+    
+    pop eax
+    
+    sub eax, 1
+    cmp eax, 11
+    jg decrement_loop
 
     invoke ExitProcess, 0
 
