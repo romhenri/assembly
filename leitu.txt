@@ -1,0 +1,41 @@
+.data
+fileName    db "sw.wav", 0                ; Nome do arquivo
+fileHandle  dd ?                          ; Handle do arquivo
+fileSize    dd ?                          ; Tamanho do arquivo
+
+.code
+start:
+    ; Abrir o arquivo "sw.wav" para leitura
+    invoke CreateFile, addr fileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL
+    mov fileHandle, eax                   ; Guardar o handle do arquivo
+
+    ; Verificar se o arquivo foi aberto com sucesso (INVALID_HANDLE_VALUE = -1)
+    cmp fileHandle, INVALID_HANDLE_VALUE
+    je erro_ao_abrir
+
+    ; Obter o tamanho do arquivo (menor que 1GB)
+    invoke GetFileSize, fileHandle, NULL   ; Passar NULL porque não precisamos da parte alta
+    mov fileSize, eax                      ; Guardar o tamanho do arquivo no registrador eax
+
+    ; Verificar se houve erro ao obter o tamanho do arquivo
+    cmp eax, INVALID_FILE_SIZE             ; Verificar se o valor retornado é 0xFFFFFFFF
+    je erro_ao_obter_tamanho               ; Se for, saltar para o tratamento de erro
+
+    ; Aqui você pode usar o valor de fileSize como o tamanho do arquivo
+    ; Exibir ou usar o tamanho conforme necessário
+
+    ; Fechar o arquivo
+    invoke CloseHandle, fileHandle
+
+    ; Sair do programa com sucesso
+    invoke ExitProcess, 0
+
+erro_ao_abrir:
+    ; Tratar erro ao abrir o arquivo
+    invoke ExitProcess, 1
+
+erro_ao_obter_tamanho:
+    ; Tratar erro ao obter o tamanho do arquivo
+    invoke ExitProcess, 2
+
+end start
